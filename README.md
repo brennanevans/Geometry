@@ -2,6 +2,10 @@
 
 Java application which can be used to create any simple polygon as well as perform geometrical calculations using them.
 
+# main
+
+This branch contains all the project content.
+
 ## Currently added calculations:
 - Area
 - Perimeter
