@@ -10,3 +10,4 @@ This branch contains all the content required to create for Software2 Week4 Lab 
 - Perimeter
 - Centroid
 - Whether it contains a point (either inside shape or as part of an edge)
+- Distance of a point to the shape (either to the nearest edge or 0 if inside and shape is filled)
