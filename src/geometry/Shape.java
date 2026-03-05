@@ -1,4 +1,4 @@
-package shapes;
+package geometry;
 public class Shape {
     private String colour;
     private boolean filled;

@@ -1,17 +1,8 @@
-package shapes;
+package geometry;
 import java.util.ArrayList;
 
 public class Polygon extends Shape {
     private ArrayList<Point> anticlockwiseVertices;
-    public static void main(String[] args) {
-        ArrayList<Point> testVertices = new ArrayList<Point>();
-        testVertices.add(new Point(5,9));
-        testVertices.add(new Point(12,21));
-        testVertices.add(new Point(20,12));
-        Polygon testPolygon = new Polygon("red",true,0,testVertices);
-        System.out.println(testPolygon.contains(new Point(15,11)));
-    }
-
     public Polygon(){
         super();
         this.anticlockwiseVertices = new ArrayList<Point>();
@@ -133,20 +124,52 @@ public class Polygon extends Shape {
             }
                 
             if (isFilled()){
-                Line testLine = new Line(new Point(0,0), point);
-                intersectionCounter += currentLine.intersects(testLine) ? 1 : 0;
-                // Adds additional 1 for cases where line crosses shape vertices
-                // as this is technically passing through 2 lines else
-                // points outside the shape whose line (0,0) --> point crosses
-                // a vertex will be considered inside as only counted one line.
-            
-                // This causes vertices to not be counted as part of the shape
-                // so explicitly tested at top of method.
-                intersectionCounter += testLine.containsPoint(anticlockwiseVertices.get(i)) ? 1 : 0;
+                // Shoot horizontal ray one way only (right)
+                Line testRay = new Line(point,new Point(point.x+1,point.y));
+
+                // If hits vertex shoot the other way
+                // Other way can't hit vertex else the point is on an edge
+                // because the shapes are simple --> not convex
+                for (Point possibleParallelPoint : anticlockwiseVertices){
+                    if (testRay.pointRayIntersection(possibleParallelPoint)){
+                        testRay = new Line(point,new Point(point.x-1,point.y));
+                    }
+                }
+
+                System.out.println(testRay);
+                
+                // If final ray hits odd number of lines it is inside
+                // If ray was replaced will be specifically 1 for inside 0 for outside
+                intersectionCounter += currentLine.rayLineIntersection(testRay) ? 1 : 0;
             }
         }
+        // System.out.println(intersectionCounter);
 
         return (intersectionCounter != 0)&&(intersectionCounter%2!=0);
+    }
+
+    public double distance(Point point){
+        if (this.contains(point)){
+            return 0;
+        }
+
+        double minimum = -1;
+        for (int i=0;i<anticlockwiseVertices.size();i++){
+            int otherIndex;
+            if (i == anticlockwiseVertices.size()-1){
+                otherIndex = 0;
+            } else{
+                otherIndex = i+1;
+            }
+            Point point1 = anticlockwiseVertices.get(i);
+            Point point2 = anticlockwiseVertices.get(otherIndex);
+            Line currentLine = new Line(point1,point2);
+
+            double distance = currentLine.distanceTo(point);
+            minimum = minimum == -1 ? distance : Math.min(distance, minimum);
+        }
+
+        return minimum;
     }
 
     public String toString(){
