@@ -5,9 +5,10 @@ Java application which can be used to create any simple polygon as well as perfo
 # main
 This branch contains all the content in this project. This includes all the content made for Sof2 Week 4 as well as the additional content I decided to add.
 
-## Currently added calculations:
+## Calculations Included:
 - Area
 - Perimeter
 - Centroid
+- Centroid of the vertex set (different to Centroid for non-triangular polygons)
 - Whether it contains a point (either inside shape or as part of an edge)
 - Distance of a point to the shape (either to the nearest edge or 0 if inside and shape is filled)

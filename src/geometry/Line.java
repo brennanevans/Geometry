@@ -2,7 +2,7 @@ package geometry;
 public class Line {
     Point start;
     Point end;
-    String colour;
+    String colour; 
 
     public Line(Point start, Point end){
         this.start = start;
@@ -22,6 +22,15 @@ public class Line {
         return this.end;
     }
 
+    public double getGradient(){
+        return (start.y-end.y)/(start.x-end.x);
+    }
+
+    public double getIntercept(){
+        double gradient = getGradient();
+        return start.y - (gradient * start.x);
+    }
+
     public double getLength(){
         double x_diff = start.x-end.x;
         double y_diff = start.y-end.y;
@@ -36,16 +45,7 @@ public class Line {
         this.end = end;
     }
 
-    public double getGradient(){
-        return (start.y-end.y)/(start.x-end.x);
-    }
-
-    public double getIntercept(){
-        double gradient = getGradient();
-        return start.y - (gradient * start.x);
-    }
-
-    private boolean pointOnSegment(double x, double y){
+    private boolean isPointOnSegment(double x, double y){
         double maxX = Math.max(this.start.x, this.end.x);
         double minX = Math.min(this.start.x, this.end.x);
 
@@ -70,10 +70,10 @@ public class Line {
             return false;
         }
         if (this.end.x < this.start.x){
-            //If shot left
+            //If shot left, return true if intersection point left of start
             return point.x < this.start.x;
         } else{
-            //If shot right
+            //If shot right, return true if intersection point right of start
             return point.x > this.start.x;
         }
     }
@@ -89,15 +89,15 @@ public class Line {
         double intersectionY = (gradient1 * intersectionX) + intercept1;
 
         // If intersection point not part of shape edge
-        if (!this.pointOnSegment(intersectionX, intersectionY)){
+        if (!this.isPointOnSegment(intersectionX, intersectionY)){
             return false;
         }
 
         if (ray.end.x < ray.start.x){
-            //If shot left
+            //If shot left, return true if intersection point left of start
             return intersectionX < ray.start.x;
         } else{
-            //If shot right
+            //If shot right, return true if intersection point right of start
             return intersectionX > ray.start.x;
         }
     }
@@ -112,10 +112,11 @@ public class Line {
         if (gradient1 == gradient2){
             return intercept1 == intercept2;
         } else{
+            // Re-arranged y = mx + c
             double intersectionX = (intercept2-intercept1)/(gradient1-gradient2);
             double intersectionY = (gradient1 * intersectionX) + intercept1;
             
-            if (!line.pointOnSegment(intersectionX, intersectionY)){
+            if (!line.isPointOnSegment(intersectionX, intersectionY)){
                 return false;
             }
 
@@ -127,6 +128,9 @@ public class Line {
     }
 
     public double distanceTo(Point point){
+        // Implements Cartesian coordinates formula
+        // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+
         double a = this.getGradient();
         double b = -1.0;
         double c = this.getIntercept();
@@ -138,7 +142,7 @@ public class Line {
         double x = (b*(b*point.x - a*point.y)-a*c)/(Math.pow(a, 2)+Math.pow(b, 2));
         double y = (a*(-b*point.x + a*point.y)-b*c)/(Math.pow(a, 2)+Math.pow(b, 2));
 
-        if (this.pointOnSegment(x, y)){
+        if (this.isPointOnSegment(x, y)){
             // Finds perpendicular distance from point to full line
             return Math.abs((a*point.x)+(b*point.y)+c)/(Math.sqrt(Math.pow(a, 2)+Math.pow(b, 2)));
         }else{
