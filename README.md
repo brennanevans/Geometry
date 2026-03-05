@@ -5,7 +5,7 @@ Java application which can be used to create any simple polygon as well as perfo
 # Week4
 This branch contains all the content required to create for Software2 Week4 Lab Exercises and Additional Exercises.
 
-## Currently added calculations:
+## Calculations Included:
 - Area
 - Perimeter
 - Centroid
