@@ -10,3 +10,4 @@ This branch contains all the content in this project. This includes all the cont
 - Perimeter
 - Centroid
 - Whether it contains a point (either inside shape or as part of an edge)
+- Distance of a point to the shape (either to the nearest edge or 0 if inside and shape is filled)
