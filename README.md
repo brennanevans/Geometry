@@ -2,8 +2,8 @@
 
 Java application which can be used to create any simple polygon as well as perform geometrical calculations using them.
 
-# Week4
-This branch contains all the content required to create for Software2 Week4 Lab Exercises and Additional Exercises.
+# main
+This branch contains all the content in this project. This includes all the content made for Sof2 Week 4 as well as the additional content I decided to add.
 
 ## Currently added calculations:
 - Area
