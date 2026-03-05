@@ -8,12 +8,12 @@ public class MainApp {
         testVertices.add(new Point(5,9));
         testVertices.add(new Point(12,21));
         testVertices.add(new Point(20,12));
+
         Polygon testPolygon = new Polygon("red",true,0,testVertices);
-        System.out.println(testPolygon.contains(new Point(8,18)));
+        System.out.println(testPolygon.contains(new Point(10,24)));
+
+        testPolygon = new Polygon("red",false,0,testVertices);
+        System.out.println(testPolygon.distance(new Point(10,24)));
 
     }
-
-    // TODO: Refactor Line and Polygon so they arent a complete mess
-    // Add pararameters/overload methods rather than defining new ones maybe
-    // Decompose more stuff into multiple methods
 }
