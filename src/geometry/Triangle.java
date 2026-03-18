@@ -11,6 +11,6 @@ public class Triangle extends Polygon{
     }
 
     public String toString(){
-        return "A Triangle which is a subclass of "+super.toString();
+        return "A Triangle which is a subclass of  "+super.toString();
     }
 }
