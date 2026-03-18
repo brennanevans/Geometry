@@ -1,12 +1,21 @@
 package shapes;
 public class Line {
-    Point start;
-    Point end;
+    Point point1;
     String colour;
+    double gradient;
 
-    public Line(Point start, Point end){
-        this.start = start;
-        this.end = end;
+    public Line(Point point1, Point point2){
+        this.point1 = point1;
+        this.colour = "Black";
+        this.gradient = (point1.y-point2.y)/(point1.x-point2.x);
+        if (this.gradient == -0.0){
+            gradient = 0.0;
+        }
+    }
+
+    public Line(Point point1, double gradient){
+        this.point1 = point1;
+        this.gradient = gradient;
         this.colour = "Black";
     }
 
@@ -14,45 +23,12 @@ public class Line {
         return this.colour;
     }
 
-    public Point getStart(){
-        return this.start;
+    public void setColour(String colour){
+        this.colour = colour;
     }
 
-    public Point getEnd(){
-        return this.end;
-    }
-
-    public double getLength(){
-        double x_diff = start.x-end.x;
-        double y_diff = start.y-end.y;
-        return Math.sqrt(Math.pow(x_diff,2)+Math.pow(y_diff,2));
-    }
-
-    public void setStart(Point start){
-        this.start = start;
-    }
-
-    public void setEnd(Point end){
-        this.end = end;
-    }
-
-    private double getGradient(){
-        return (start.y-end.y)/(start.x-end.x);
-    }
-
-    private double getIntercept(){
-        double gradient = getGradient();
-        return start.y - (gradient * start.x);
-    }
-
-    private boolean pointOnSegment(double x, double y){
-        double maxX = Math.max(this.start.x, this.end.x);
-        double minX = Math.min(this.start.x, this.end.x);
-
-        double maxY = Math.max(this.start.y, this.end.y);
-        double minY = Math.min(this.start.y, this.end.y);
-
-        return (x>minX)&&(x<maxX)&&(y>minY)&&(y<maxY);
+    public double getIntercept(){
+        return point1.y - (gradient * point1.x);
     }
 
     public boolean containsPoint(Point point){
@@ -60,41 +36,74 @@ public class Line {
     }
 
     private boolean containsPoint(double x, double y){
-        if (!this.pointOnSegment(x, y)){
-            return false;
-        }
-
-        double gradient = getGradient();
         double intercept = getIntercept();
         return y == (gradient*x) + intercept;
     }
 
-    public boolean intersects(Line line){
-        double gradient1 = this.getGradient();
+    public Point getIntersectionPoint(Line line){
+        double gradient1 = this.gradient;
         double intercept1 = this.getIntercept();
 
-        double gradient2 = line.getGradient();
+        double gradient2 = line.gradient;
         double intercept2 = line.getIntercept();
 
         if (gradient1 == gradient2){
-            return intercept1 == intercept2;
-        } else{
-            double intersectionX = (intercept2-intercept1)/(gradient1-gradient2);
-            double intersectionY = (gradient1 * intersectionX) + intercept1;
-            
-            if (!line.pointOnSegment(intersectionX, intersectionY)){
+            if (intercept1 == intercept2){
+                return null;
+            }
+        }
+
+        double intersectionX = (intercept2-intercept1)/(gradient1-gradient2);
+        double intersectionY = (gradient1 * intersectionX) + intercept1;
+
+        return new Point(intersectionX,intersectionY);
+    }
+
+    public boolean intersects(Line line){
+        Point intersectionPoint = getIntersectionPoint(line);
+        if (intersectionPoint == null){
+            return false;
+        } 
+        if (line instanceof Ray || line instanceof Segment){
+            if (!line.containsPoint(intersectionPoint)){
                 return false;
             }
-
-            if (containsPoint(intersectionX,intersectionY)){
-                return true;
-            }
-            return false;
         }
+        if (this instanceof Ray || this instanceof Segment){
+            if (!this.containsPoint(intersectionPoint)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected Point getPerpendicularPoint(Point point){
+        double a = this.gradient;
+        double b = -1.0;
+        double c = this.getIntercept();
+
+        double x = (b*(b*point.x - a*point.y)-a*c)/(Math.pow(a, 2)+Math.pow(b, 2));
+        double y = (a*(-b*point.x + a*point.y)-b*c)/(Math.pow(a, 2)+Math.pow(b, 2));
+
+        return new Point(x,y);
+    }
+
+    public double distanceTo(Point point){
+        // Implements Cartesian coordinates formula
+        // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+
+        if (containsPoint(point)){
+            return 0;
+        }
+
+        Point perpendicularPoint = getPerpendicularPoint(point);
+
+        return Math.sqrt(Math.pow(perpendicularPoint.x-point.x, 2)+Math.pow(perpendicularPoint.y-point.y, 2));
     }
 
     public String toString(){
-        return "A Line with colour=" + colour + ", with start point=" + start
-        + " and end point=" +end;
+        return "A Line containing point=" + point1
+        + ", with gradient=" +gradient + ",with colour="+colour;
     }
 }

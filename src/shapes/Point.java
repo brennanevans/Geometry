@@ -4,12 +4,6 @@ public class Point {
     double y;
     String colour;
 
-    public Point(){
-        this.x = 0.0;
-        this.y = 0.0;
-        this.colour = "Black";
-    }
-
     public Point(int x, int y){
         this.x = x;
         this.y = y;
@@ -17,9 +11,15 @@ public class Point {
     }
 
     public Point(double x, double y){
-        this.x = (double) Math.round(x);
-        this.y = (double) Math.round(y);
+        this.x = x;
+        this.y = y;
         this.colour = "Black";
+    }
+
+    public Point(double x, double y, String colour){
+        this.x = x;
+        this.y = y;
+        this.colour = colour;
     }
 
     public boolean equals(Object object){
@@ -40,6 +40,6 @@ public class Point {
     }
 
     public String toString(){
-        return "A Point with x="+x+", y="+y+" and colour of " + this.colour;
+        return "A Point with coordinates ("+x+","+y+") and colour=" + this.colour;
     }
 }

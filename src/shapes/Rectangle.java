@@ -2,21 +2,26 @@ package shapes;
 import java.util.ArrayList;
 
 public class Rectangle extends Polygon{
-    double width;
-    double length;
+    protected double width;
+    protected double length;
 
-    public Rectangle(){
-        this.width = 1.0;
-        this.length = 1.0;
+    private static ArrayList<Point> calculatePoints(double width, double length, Point centre){
+        ArrayList<Point> points = new ArrayList<Point>();
+        points.add(new Point(centre.x-width/2,centre.y+width/2));
+        points.add(new Point(centre.x-width/2,centre.y-width/2));
+        points.add(new Point(centre.x+width/2,centre.y-width/2));
+        points.add(new Point(centre.x+width/2,centre.y+width/2));
+        return points;
     }
 
-    public Rectangle(double width, double length){
+    public Rectangle(double width, double length, Point centre){
+        super(calculatePoints(width, length, centre));
         this.width = width;
         this.length = length;
     }
 
-    public Rectangle(double width, double length, String colour, boolean filled, double orientation,ArrayList<Point> vertices){
-        super(colour,filled,orientation,vertices);
+    public Rectangle(double width, double length, String colour, boolean filled, double orientation, ArrayList<Point> anticlockwiseVertices){
+        super(colour,filled,orientation,anticlockwiseVertices);
         this.width = width;
         this.length = length;
     }

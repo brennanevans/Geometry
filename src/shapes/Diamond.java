@@ -2,10 +2,6 @@ package shapes;
 import java.util.ArrayList;
 
 public class Diamond extends Polygon{
-    public Diamond(){
-        super();
-    }
-
     public Diamond(ArrayList<Point> AnticlockwiseVertices){
         super(AnticlockwiseVertices);
     }

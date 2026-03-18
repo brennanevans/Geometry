@@ -3,19 +3,6 @@ import java.util.ArrayList;
 
 public class Polygon extends Shape {
     private ArrayList<Point> anticlockwiseVertices;
-    public static void main(String[] args) {
-        ArrayList<Point> testVertices = new ArrayList<Point>();
-        testVertices.add(new Point(5,9));
-        testVertices.add(new Point(12,21));
-        testVertices.add(new Point(20,12));
-        Polygon testPolygon = new Polygon("red",true,0,testVertices);
-        System.out.println(testPolygon.contains(new Point(15,11)));
-    }
-
-    public Polygon(){
-        super();
-        this.anticlockwiseVertices = new ArrayList<Point>();
-    }
 
     public Polygon(ArrayList<Point> anticlockwiseVertices){
         super();
@@ -33,38 +20,62 @@ public class Polygon extends Shape {
         return this.anticlockwiseVertices;
     }
 
-    private Point calculateCentroid(){
-        double area = getArea();
-        double centroidX = 0;
-        double centroidY = 0;
+    public ArrayList<Segment> getEdges(){
+        ArrayList<Segment> edgeArray = new ArrayList<Segment>();
 
+        int otherIndex;
         for (int i=0;i<anticlockwiseVertices.size();i++){
-            int otherIndex;
             if (i == anticlockwiseVertices.size()-1){
                 otherIndex = 0;
             } else{
                 otherIndex = i+1;
             }
-        
-            double y1 = anticlockwiseVertices.get(i).y;
-            double y2 = anticlockwiseVertices.get(otherIndex).y;
-            double x1 = anticlockwiseVertices.get(i).x;
-            double x2 = anticlockwiseVertices.get(otherIndex).x;
-            centroidX += (x1+x2)*((x1*y2)-(x2*y1));
-            centroidY += (y1+y2)*((x1*y2)-(x2*y1));
+            edgeArray.add(new Segment(anticlockwiseVertices.get(i), anticlockwiseVertices.get(otherIndex)));
         }
-
-        int centroidXInt = (int) Math.round(centroidX/(6*area));
-        int centroidYInt = (int) Math.round(centroidY/(6*area));
-        return new Point(centroidXInt,centroidYInt);
+        return edgeArray;
     }
 
-    public void setCentre(){
-        Point centroid = calculateCentroid();
-        super.setCentre((int)centroid.x,(int)centroid.y);
+    public Point calculateCentroid(){
+        // https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
+        double area = getArea();
+        double edgeSummationX = 0;
+        double edgeSummationY = 0;
+
+        ArrayList<Segment> edgeArray = getEdges();
+
+        for (Segment edge : edgeArray){
+            double x1 = edge.getStart().x;
+            double x2 = edge.getEnd().x;
+
+            double y1 = edge.getStart().y;
+            double y2 = edge.getEnd().y;
+
+            edgeSummationX += (x1+x2)*((x1*y2)-(x2*y1));
+            edgeSummationY += (y1+y2)*((x1*y2)-(x2*y1));
+        }
+        double centroidX = edgeSummationX/(6*area);
+        double centroidY = edgeSummationY/(6*area);
+
+        return new Point(centroidX,centroidY);
     }
 
-    public void setCentre(int x, int y){
+    public Point calculateVertexCentroid(){
+        // https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
+        double xSummation = 0;
+        double ySummation = 0;
+        int n = anticlockwiseVertices.size();
+
+        for (Point point : anticlockwiseVertices){
+            xSummation += point.x;
+            ySummation += point.y;
+        }
+        
+        double centroidX = (xSummation * 1/n);
+        double centroidY = (ySummation * 1/n);
+        return new Point(centroidX,centroidY);
+    }
+
+    public void setCentre(double x, double y){
         ArrayList<Point> newPoints = new ArrayList<Point>();
         for (Point point : anticlockwiseVertices){
             double xOffset = this.getCentre().x - point.x;
@@ -74,41 +85,51 @@ public class Polygon extends Shape {
         anticlockwiseVertices = newPoints;
     }
 
+    private void setCentre(){
+        Point centroid = calculateCentroid();
+        super.setCentre(centroid.x,centroid.y);
+    }
+
     public double getPerimeter(){
         double perimeter = 0;
-        for (int i=0;i<anticlockwiseVertices.size();i++){
-            int otherIndex;
-            if (i == anticlockwiseVertices.size()-1){
-                otherIndex = 0;
-            } else{
-                otherIndex = i+1;
-            }
-
-            double xDiff = anticlockwiseVertices.get(i).x - anticlockwiseVertices.get(otherIndex).x;
-            double yDiff = anticlockwiseVertices.get(i).y - anticlockwiseVertices.get(otherIndex).y;
-            double sideLength = Math.sqrt(Math.pow(xDiff, 2)+Math.pow(yDiff, 2));
-            perimeter += sideLength;
+        ArrayList<Segment> edgeArray = getEdges();
+        for (Segment edge : edgeArray){
+            perimeter += edge.getLength();
         }
         return perimeter;
     }
 
     public double getArea(){
+        // https://en.wikipedia.org/wiki/Shoelace_formula#Trapezoid_formula
+
         double total = 0;
-        for (int i=0;i<anticlockwiseVertices.size();i++){
-            int otherIndex;
-            if (i == anticlockwiseVertices.size()-1){
-                otherIndex = 0;
-            } else{
-                otherIndex = i+1;
-            }
-            double y1 = anticlockwiseVertices.get(i).y;
-            double y2 = anticlockwiseVertices.get(otherIndex).y;
-            double x1 = anticlockwiseVertices.get(i).x;
-            double x2 = anticlockwiseVertices.get(otherIndex).x;
-            double trapezoidArea = 0.5*((y1+y2)*(x1-x2));
-            total+=trapezoidArea;
+        ArrayList<Segment> edgeArray = getEdges();
+        for (Segment edge : edgeArray){
+            total+=0.5*((edge.getStart().y+edge.getEnd().y)*(edge.getStart().x-edge.getEnd().x));
         }
-        return total;
+        return Math.abs(total);
+    }
+
+    private boolean rayContainsVertex(Ray ray){
+        for (Point vertex : anticlockwiseVertices){
+            if (ray.containsPoint(vertex)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Ray generateTestRay(Point point){
+        // Shoot horizontal ray one way only (right)
+        Ray testRay = new Ray(point,0,false);
+        if (rayContainsVertex(testRay)){
+            // If hits vertex shoot the other way
+            testRay = new Ray(point,0,true);
+            if (rayContainsVertex(testRay)){
+                return null;
+            }
+        }
+        return testRay;
     }
 
     public boolean contains(Point point){
@@ -116,37 +137,49 @@ public class Polygon extends Shape {
             return true;
         } 
 
+        ArrayList<Segment> edgeArray = getEdges();
         int intersectionCounter = 0;
-        for (int i=0;i<anticlockwiseVertices.size();i++){
-            int otherIndex;
-            if (i == anticlockwiseVertices.size()-1){
-                otherIndex = 0;
-            } else{
-                otherIndex = i+1;
-            }
-            Point point1 = anticlockwiseVertices.get(i);
-            Point point2 = anticlockwiseVertices.get(otherIndex);
-            Line currentLine = new Line(point1,point2);
 
-            if (currentLine.containsPoint(point)){
+        for (Segment edge : edgeArray){
+            if (edge.containsPoint(point)){
                 return true;
             }
-                
-            if (isFilled()){
-                Line testLine = new Line(new Point(0,0), point);
-                intersectionCounter += currentLine.intersects(testLine) ? 1 : 0;
-                // Adds additional 1 for cases where line crosses shape vertices
-                // as this is technically passing through 2 lines else
-                // points outside the shape whose line (0,0) --> point crosses
-                // a vertex will be considered inside as only counted one line.
-            
-                // This causes vertices to not be counted as part of the shape
-                // so explicitly tested at top of method.
-                intersectionCounter += testLine.containsPoint(anticlockwiseVertices.get(i)) ? 1 : 0;
+        }
+        // If not filled and point not on edge, shape considered to not contain
+        //  point
+        if (!isFilled()){
+            return false;
+        } else{
+            Ray testRay = generateTestRay(point);
+            if (testRay == null){
+                // Ray hit verticies in both directions so point inbetween 
+                // vertices. If between two verticies must be inside shape for
+                // simple polygons.
+                return true;
             }
+            
+            for (Segment edge : edgeArray){
+                intersectionCounter += testRay.intersects(edge) ? 1 : 0;
+            }
+
+            return (intersectionCounter != 0)&&(intersectionCounter%2!=0); 
+        }
+    }
+
+    public double distance(Point point){
+        if (this.contains(point)){
+            return 0;
         }
 
-        return (intersectionCounter != 0)&&(intersectionCounter%2!=0);
+        ArrayList<Segment> edgeArray = getEdges();
+        double minimum = -1;
+
+        for (Segment edge : edgeArray){
+            double distance = edge.distanceTo(point);
+            minimum = minimum == -1 ? distance : Math.min(distance, minimum);
+        }
+        
+        return minimum;
     }
 
     public String toString(){

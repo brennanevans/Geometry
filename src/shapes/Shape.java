@@ -1,10 +1,10 @@
 package shapes;
-public class Shape {
+
+public abstract class Shape {
     private String colour;
     private boolean filled;
     private Point centre;
     private double orientation;
-
 
     public Shape(){
         this.colour = "red";
@@ -23,22 +23,13 @@ public class Shape {
     public String getColour(){
         return this.colour;
     }
+    
+    public void setColour(String colour){
+        this.colour = colour;
+    }
 
     public boolean isFilled(){
         return this.filled;
-    }
-
-    public String toString(){
-        String stringRepresentation = "A Shape with centre of " + centre
-        + ", rotated " + orientation +" degrees clockwise" + ", colour of "
-        + this.colour + " and is ";
-        stringRepresentation += (this.filled) ? "filled" : "not filled.";
-
-        return stringRepresentation;
-    }
-
-    public void setColour(String colour){
-        this.colour = colour;
     }
 
     public void setFilled(boolean filled){
@@ -49,7 +40,7 @@ public class Shape {
         return centre;
     }
 
-    public void setCentre(int x, int y){
+    public void setCentre(double x, double y){
         centre = new Point(x,y);
     }
 
@@ -73,5 +64,18 @@ public class Shape {
         } else{
             orientation = overflow;
         }
+    }
+
+    public abstract double getArea();
+
+    public abstract double getPerimeter();
+
+    public String toString(){
+        String stringRepresentation = "A Shape with centre of " + centre
+        + ", rotated " + orientation +" degrees clockwise" + ", colour of "
+        + this.colour + " and is ";
+        stringRepresentation += (this.filled) ? "filled" : "not filled.";
+
+        return stringRepresentation;
     }
 }
