@@ -1,4 +1,4 @@
-package shapes;
+package geometry;
 public class Point {
     double x;
     double y;

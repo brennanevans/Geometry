@@ -1,4 +1,4 @@
-package shapes;
+package geometry;
 
 public abstract class Shape {
     private String colour;

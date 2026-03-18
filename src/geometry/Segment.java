@@ -1,4 +1,4 @@
-package shapes;
+package geometry;
 
 public class Segment extends Line{
     private Point start;

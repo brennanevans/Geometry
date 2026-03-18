@@ -1,4 +1,4 @@
-package shapes;
+package geometry;
 
 public class Ray extends Line{
     private Point start; 
@@ -28,10 +28,6 @@ public class Ray extends Line{
         if (!super.containsPoint(point)){
             return false;
         }
-        // System.out.println(this);
-        // System.out.println(point);
-        // System.out.println(" ");
-
 
         if (shotLeft){
             return point.x < this.start.x;

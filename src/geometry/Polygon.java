@@ -1,4 +1,4 @@
-package shapes;
+package geometry;
 import java.util.ArrayList;
 
 public class Polygon extends Shape {

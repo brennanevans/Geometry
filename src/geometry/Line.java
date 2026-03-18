@@ -1,4 +1,4 @@
-package shapes;
+package geometry;
 public class Line {
     Point point1;
     String colour;
